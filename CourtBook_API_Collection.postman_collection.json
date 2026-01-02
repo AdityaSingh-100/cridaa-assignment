@@ -1,0 +1,259 @@
+{
+  "info": {
+    "name": "CourtBook API Collection",
+    "description": "Complete API documentation for Court Booking Application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password. Returns JWT token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get currently logged in user details. Requires authentication."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Slots",
+      "item": [
+        {
+          "name": "Get All Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"]
+            },
+            "description": "Get all available slots. No authentication required."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slots by Date",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots?date=2026-01-02",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"],
+              "query": [
+                {
+                  "key": "date",
+                  "value": "2026-01-02"
+                }
+              ]
+            },
+            "description": "Get slots filtered by date (YYYY-MM-DD format)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slots by Court",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots?courtName=Court A - Indoor",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"],
+              "query": [
+                {
+                  "key": "courtName",
+                  "value": "Court A - Indoor"
+                }
+              ]
+            },
+            "description": "Get slots filtered by court name"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Slots Only",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots?available=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots"],
+              "query": [
+                {
+                  "key": "available",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get only available (not booked) slots"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slot by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/slots/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "slot_id_here"
+                }
+              ]
+            },
+            "description": "Get details of a specific slot by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Book a Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slots/book/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "book", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "slot_id_here"
+                }
+              ]
+            },
+            "description": "Book a specific slot. Requires authentication. Slot must be available."
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slots/cancel/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "cancel", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "slot_id_here"
+                }
+              ]
+            },
+            "description": "Cancel a booking. Requires authentication. User must own the booking."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/slots/user/my-bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["slots", "user", "my-bookings"]
+            },
+            "description": "Get all bookings for the currently logged in user. Requires authentication."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
