@@ -10,12 +10,28 @@ const router = express.Router();
 // @access  Public
 router.get("/", async (req, res) => {
   try {
-    const { date, courtName, available } = req.query;
+    const { date, courtName, available, timeSlot, location } = req.query;
 
     let filter = {};
     if (date) filter.date = date;
     if (courtName) filter.courtName = courtName;
     if (available === "true") filter.isBooked = false;
+
+    // Time slot filter
+    if (timeSlot) {
+      filter.timeSlot = timeSlot;
+    }
+
+    // Location filter (Indoor/Outdoor/Premium)
+    if (location && location !== "all") {
+      if (location === "Indoor") {
+        filter.courtName = "Court A - Indoor";
+      } else if (location === "Outdoor") {
+        filter.courtName = "Court B - Outdoor";
+      } else if (location === "Premium") {
+        filter.courtName = "Court C - Premium";
+      }
+    }
 
     const slots = await Slot.find(filter)
       .populate("bookedBy", "name email")

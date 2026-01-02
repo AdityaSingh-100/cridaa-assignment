@@ -21,6 +21,8 @@ const BookingPage = () => {
     format(new Date(), "yyyy-MM-dd")
   );
   const [selectedCourt, setSelectedCourt] = useState("all");
+  const [selectedTime, setSelectedTime] = useState("all");
+  const [selectedLocation, setSelectedLocation] = useState("all");
   const [bookingSlot, setBookingSlot] = useState(null);
   const [message, setMessage] = useState(null);
   const { isAuthenticated } = useAuth();
@@ -32,6 +34,34 @@ const BookingPage = () => {
     "Court B - Outdoor",
     "Court C - Premium",
   ];
+
+  const locations = [
+    { value: "all", label: "All Locations" },
+    { value: "Indoor", label: "Indoor Courts" },
+    { value: "Outdoor", label: "Outdoor Courts" },
+    { value: "Premium", label: "Premium Courts" },
+  ];
+
+  const timeSlots = [
+    { value: "all", label: "All Times" },
+    { value: "06:00 - 07:00", label: "Morning (6-7 AM)" },
+    { value: "07:00 - 08:00", label: "Morning (7-8 AM)" },
+    { value: "08:00 - 09:00", label: "Morning (8-9 AM)" },
+    { value: "09:00 - 10:00", label: "Morning (9-10 AM)" },
+    { value: "10:00 - 11:00", label: "Late Morning (10-11 AM)" },
+    { value: "11:00 - 12:00", label: "Late Morning (11-12 PM)" },
+    { value: "12:00 - 13:00", label: "Afternoon (12-1 PM)" },
+    { value: "13:00 - 14:00", label: "Afternoon (1-2 PM)" },
+    { value: "14:00 - 15:00", label: "Afternoon (2-3 PM)" },
+    { value: "15:00 - 16:00", label: "Afternoon (3-4 PM)" },
+    { value: "16:00 - 17:00", label: "Evening (4-5 PM)" },
+    { value: "17:00 - 18:00", label: "Evening (5-6 PM)" },
+    { value: "18:00 - 19:00", label: "Evening (6-7 PM)" },
+    { value: "19:00 - 20:00", label: "Evening (7-8 PM)" },
+    { value: "20:00 - 21:00", label: "Night (8-9 PM)" },
+    { value: "21:00 - 22:00", label: "Night (9-10 PM)" },
+  ];
+
   const dates = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(new Date(), i);
     return format(date, "yyyy-MM-dd");
@@ -43,7 +73,7 @@ const BookingPage = () => {
 
   useEffect(() => {
     filterSlots();
-  }, [slots, selectedDate, selectedCourt]);
+  }, [slots, selectedDate, selectedCourt, selectedTime, selectedLocation]);
 
   const fetchSlots = async () => {
     setLoading(true);
@@ -60,9 +90,34 @@ const BookingPage = () => {
 
   const filterSlots = () => {
     let filtered = slots.filter((slot) => slot.date === selectedDate);
+
+    // Filter by court
     if (selectedCourt !== "all") {
       filtered = filtered.filter((slot) => slot.courtName === selectedCourt);
     }
+
+    // Filter by time
+    if (selectedTime !== "all") {
+      filtered = filtered.filter((slot) => slot.timeSlot === selectedTime);
+    }
+
+    // Filter by location
+    if (selectedLocation !== "all") {
+      if (selectedLocation === "Indoor") {
+        filtered = filtered.filter(
+          (slot) => slot.courtName === "Court A - Indoor"
+        );
+      } else if (selectedLocation === "Outdoor") {
+        filtered = filtered.filter(
+          (slot) => slot.courtName === "Court B - Outdoor"
+        );
+      } else if (selectedLocation === "Premium") {
+        filtered = filtered.filter(
+          (slot) => slot.courtName === "Court C - Premium"
+        );
+      }
+    }
+
     setFilteredSlots(filtered);
   };
 
@@ -153,14 +208,14 @@ const BookingPage = () => {
           <h2 className="text-xl font-display font-semibold">Filters</h2>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Date Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-3">
               Select Date
             </label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-              {dates.map((date) => (
+            <div className="grid grid-cols-2 gap-2">
+              {dates.slice(0, 4).map((date) => (
                 <button
                   key={date}
                   onClick={() => setSelectedDate(date)}
@@ -187,22 +242,102 @@ const BookingPage = () => {
               Select Court
             </label>
             <div className="space-y-2">
-              {courts.map((court) => (
+              {courts.slice(0, 3).map((court) => (
                 <button
                   key={court}
                   onClick={() => setSelectedCourt(court)}
-                  className={`w-full p-3 rounded-xl text-left font-medium transition-all ${
+                  className={`w-full p-2.5 rounded-xl text-left text-sm font-medium transition-all ${
                     selectedCourt === court
                       ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
                       : "bg-white/5 hover:bg-white/10 text-gray-300"
                   }`}
                 >
-                  {court === "all" ? "All Courts" : court}
+                  {court === "all" ? "All Courts" : court.split(" - ")[0]}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* Location Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-3">
+              Location Type
+            </label>
+            <div className="space-y-2">
+              {locations.map((location) => (
+                <button
+                  key={location.value}
+                  onClick={() => setSelectedLocation(location.value)}
+                  className={`w-full p-2.5 rounded-xl text-left text-sm font-medium transition-all ${
+                    selectedLocation === location.value
+                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
+                      : "bg-white/5 hover:bg-white/10 text-gray-300"
+                  }`}
+                >
+                  {location.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Time Filter */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-3">
+              Time Slot
+            </label>
+            <select
+              value={selectedTime}
+              onChange={(e) => setSelectedTime(e.target.value)}
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            >
+              {timeSlots.map((time) => (
+                <option
+                  key={time.value}
+                  value={time.value}
+                  className="bg-gray-900"
+                >
+                  {time.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+
+        {/* Active Filters Summary */}
+        {(selectedCourt !== "all" ||
+          selectedTime !== "all" ||
+          selectedLocation !== "all") && (
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-gray-400">Active filters:</span>
+              {selectedCourt !== "all" && (
+                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                  {selectedCourt}
+                </span>
+              )}
+              {selectedLocation !== "all" && (
+                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                  {locations.find((l) => l.value === selectedLocation)?.label}
+                </span>
+              )}
+              {selectedTime !== "all" && (
+                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                  {timeSlots.find((t) => t.value === selectedTime)?.label}
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  setSelectedCourt("all");
+                  setSelectedTime("all");
+                  setSelectedLocation("all");
+                }}
+                className="ml-2 text-sm text-red-400 hover:text-red-300 underline"
+              >
+                Clear all
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Slots Display */}
