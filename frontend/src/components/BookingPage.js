@@ -21,10 +21,11 @@ const BookingPage = () => {
     format(new Date(), "yyyy-MM-dd")
   );
   const [selectedCourt, setSelectedCourt] = useState("all");
-  const [selectedTime, setSelectedTime] = useState("all");
+  const [selectedTime, setSelectedTime] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("all");
   const [bookingSlot, setBookingSlot] = useState(null);
   const [message, setMessage] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -89,6 +90,12 @@ const BookingPage = () => {
   };
 
   const filterSlots = () => {
+    // Don't show any slots if no time is selected
+    if (!selectedTime) {
+      setFilteredSlots([]);
+      return;
+    }
+
     let filtered = slots.filter((slot) => slot.date === selectedDate);
 
     // Filter by court
@@ -96,10 +103,8 @@ const BookingPage = () => {
       filtered = filtered.filter((slot) => slot.courtName === selectedCourt);
     }
 
-    // Filter by time
-    if (selectedTime !== "all") {
-      filtered = filtered.filter((slot) => slot.timeSlot === selectedTime);
-    }
+    // Filter by time - must have a time selected
+    filtered = filtered.filter((slot) => slot.timeSlot === selectedTime);
 
     // Filter by location
     if (selectedLocation !== "all") {
@@ -162,13 +167,13 @@ const BookingPage = () => {
   const groupedSlots = groupSlotsByCourt();
 
   return (
-    <div className="max-w-7xl mx-auto p-4 pb-20">
+    <div className="max-w-7xl mx-auto p-3 sm:p-4 pb-20">
       {/* Hero Section */}
-      <div className="glass-card p-8 mb-8 text-center animate-fade-in">
-        <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient mb-4">
+      <div className="glass-card p-6 sm:p-8 mb-6 sm:mb-8 text-center animate-fade-in">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gradient mb-3 sm:mb-4">
           Book Your Court
         </h1>
-        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+        <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
           Reserve your preferred time slot across our premium indoor and outdoor
           courts
         </p>
@@ -177,21 +182,21 @@ const BookingPage = () => {
       {/* Message Alert */}
       {message && (
         <div
-          className={`glass-card p-4 mb-6 flex items-center gap-3 animate-slide-up ${
+          className={`glass-card p-3 sm:p-4 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 animate-slide-up ${
             message.type === "success"
               ? "bg-green-500/10 border-green-500/30"
               : "bg-red-500/10 border-red-500/30"
           }`}
         >
           {message.type === "success" ? (
-            <CheckCircle className="w-5 h-5 text-green-400" />
+            <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-400" />
           ) : (
-            <AlertCircle className="w-5 h-5 text-red-400" />
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
           )}
           <p
-            className={
+            className={`text-sm sm:text-base ${
               message.type === "success" ? "text-green-300" : "text-red-300"
-            }
+            }`}
           >
             {message.text}
           </p>
@@ -200,39 +205,35 @@ const BookingPage = () => {
 
       {/* Filters */}
       <div
-        className="glass-card p-6 mb-8 animate-slide-up"
+        className="glass-card p-4 sm:p-6 mb-8 animate-slide-up"
         style={{ animationDelay: "0.1s" }}
       >
         <div className="flex items-center gap-2 mb-4">
           <Filter className="w-5 h-5 text-primary-400" />
-          <h2 className="text-xl font-display font-semibold">Filters</h2>
+          <h2 className="text-lg sm:text-xl font-display font-semibold">
+            Filters
+          </h2>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Date Filter */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {/* Date Filter with Calendar */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-3">
               Select Date
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              {dates.slice(0, 4).map((date) => (
-                <button
-                  key={date}
-                  onClick={() => setSelectedDate(date)}
-                  className={`p-3 rounded-xl text-sm font-medium transition-all ${
-                    selectedDate === date
-                      ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
-                      : "bg-white/5 hover:bg-white/10 text-gray-300"
-                  }`}
-                >
-                  <div className="text-xs opacity-70">
-                    {format(parseISO(date), "EEE")}
-                  </div>
-                  <div className="font-bold">
-                    {format(parseISO(date), "d MMM")}
-                  </div>
-                </button>
-              ))}
+            <div className="relative">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                min={format(new Date(), "yyyy-MM-dd")}
+                max={format(addDays(new Date(), 30), "yyyy-MM-dd")}
+                className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all cursor-pointer"
+                style={{ colorScheme: "dark" }}
+              />
+            </div>
+            <div className="mt-2 text-xs text-gray-400">
+              {format(parseISO(selectedDate), "EEEE, MMMM d, yyyy")}
             </div>
           </div>
 
@@ -246,7 +247,7 @@ const BookingPage = () => {
                 <button
                   key={court}
                   onClick={() => setSelectedCourt(court)}
-                  className={`w-full p-2.5 rounded-xl text-left text-sm font-medium transition-all ${
+                  className={`w-full p-2.5 rounded-xl text-left text-xs sm:text-sm font-medium transition-all ${
                     selectedCourt === court
                       ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
                       : "bg-white/5 hover:bg-white/10 text-gray-300"
@@ -268,7 +269,7 @@ const BookingPage = () => {
                 <button
                   key={location.value}
                   onClick={() => setSelectedLocation(location.value)}
-                  className={`w-full p-2.5 rounded-xl text-left text-sm font-medium transition-all ${
+                  className={`w-full p-2.5 rounded-xl text-left text-xs sm:text-sm font-medium transition-all ${
                     selectedLocation === location.value
                       ? "bg-primary-500 text-white shadow-lg shadow-primary-500/30"
                       : "bg-white/5 hover:bg-white/10 text-gray-300"
@@ -283,14 +284,17 @@ const BookingPage = () => {
           {/* Time Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-3">
-              Time Slot
+              Time Slot *
             </label>
             <select
               value={selectedTime}
               onChange={(e) => setSelectedTime(e.target.value)}
-              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full p-3 rounded-xl bg-white/5 border border-white/10 text-gray-300 font-medium focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-sm"
             >
-              {timeSlots.map((time) => (
+              <option value="" className="bg-gray-900">
+                Select a time slot
+              </option>
+              {timeSlots.slice(1).map((time) => (
                 <option
                   key={time.value}
                   value={time.value}
@@ -300,38 +304,45 @@ const BookingPage = () => {
                 </option>
               ))}
             </select>
+            {!selectedTime && (
+              <p className="mt-2 text-xs text-yellow-400">
+                Select a time to view available courts
+              </p>
+            )}
           </div>
         </div>
 
         {/* Active Filters Summary */}
         {(selectedCourt !== "all" ||
-          selectedTime !== "all" ||
+          selectedTime ||
           selectedLocation !== "all") && (
           <div className="mt-4 pt-4 border-t border-white/10">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-gray-400">Active filters:</span>
+              <span className="text-xs sm:text-sm text-gray-400">
+                Active filters:
+              </span>
               {selectedCourt !== "all" && (
-                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                <span className="px-2 sm:px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-xs sm:text-sm">
                   {selectedCourt}
                 </span>
               )}
               {selectedLocation !== "all" && (
-                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+                <span className="px-2 sm:px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-xs sm:text-sm">
                   {locations.find((l) => l.value === selectedLocation)?.label}
                 </span>
               )}
-              {selectedTime !== "all" && (
-                <span className="px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-sm">
+              {selectedTime && (
+                <span className="px-2 sm:px-3 py-1 bg-primary-500/20 text-primary-300 rounded-full text-xs sm:text-sm">
                   {timeSlots.find((t) => t.value === selectedTime)?.label}
                 </span>
               )}
               <button
                 onClick={() => {
                   setSelectedCourt("all");
-                  setSelectedTime("all");
+                  setSelectedTime("");
                   setSelectedLocation("all");
                 }}
-                className="ml-2 text-sm text-red-400 hover:text-red-300 underline"
+                className="ml-2 text-xs sm:text-sm text-red-400 hover:text-red-300 underline"
               >
                 Clear all
               </button>
@@ -346,26 +357,39 @@ const BookingPage = () => {
           <div className="inline-block w-12 h-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin"></div>
           <p className="text-gray-400 mt-4">Loading slots...</p>
         </div>
+      ) : !selectedTime ? (
+        <div className="glass-card p-8 sm:p-12 text-center">
+          <Clock className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-lg sm:text-xl text-gray-400 mb-2">
+            Please select a time slot to view available courts
+          </p>
+          <p className="text-sm text-gray-500">
+            Choose a time from the filters above to see available bookings
+          </p>
+        </div>
       ) : Object.keys(groupedSlots).length === 0 ? (
-        <div className="glass-card p-12 text-center">
-          <XCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-xl text-gray-400">
+        <div className="glass-card p-8 sm:p-12 text-center">
+          <XCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-lg sm:text-xl text-gray-400">
             No slots available for selected filters
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Try adjusting your filters or selecting a different date
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {Object.entries(groupedSlots).map(
             ([courtName, courtSlots], index) => (
               <div
                 key={courtName}
-                className="glass-card p-6 animate-slide-up"
+                className="glass-card p-4 sm:p-6 animate-slide-up"
                 style={{ animationDelay: `${0.2 + index * 0.1}s` }}
               >
-                <h3 className="text-2xl font-display font-bold text-gradient mb-6">
+                <h3 className="text-xl sm:text-2xl font-display font-bold text-gradient mb-4 sm:mb-6">
                   {courtName}
                 </h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                   {courtSlots.map((slot) => (
                     <div
                       key={slot._id}
@@ -376,7 +400,9 @@ const BookingPage = () => {
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-2 text-primary-400">
                           <Clock className="w-4 h-4" />
-                          <span className="font-semibold">{slot.timeSlot}</span>
+                          <span className="font-semibold text-sm sm:text-base">
+                            {slot.timeSlot}
+                          </span>
                         </div>
                         {slot.isBooked ? (
                           <span className="text-xs px-2 py-1 bg-red-500/20 text-red-400 rounded-full">
@@ -400,14 +426,18 @@ const BookingPage = () => {
 
                       <div className="flex items-center gap-2 text-gray-300 mb-4">
                         <DollarSign className="w-4 h-4" />
-                        <span className="font-bold text-lg">₹{slot.price}</span>
-                        <span className="text-sm text-gray-400">/ hour</span>
+                        <span className="font-bold text-base sm:text-lg">
+                          ₹{slot.price}
+                        </span>
+                        <span className="text-xs sm:text-sm text-gray-400">
+                          / hour
+                        </span>
                       </div>
 
                       <button
                         onClick={() => handleBookSlot(slot._id)}
                         disabled={slot.isBooked || bookingSlot === slot._id}
-                        className={`w-full py-2 rounded-lg font-semibold transition-all ${
+                        className={`w-full py-2 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                           slot.isBooked
                             ? "bg-gray-500/20 text-gray-500 cursor-not-allowed"
                             : bookingSlot === slot._id
