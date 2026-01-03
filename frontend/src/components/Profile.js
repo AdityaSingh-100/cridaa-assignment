@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "../services/api";
+import { authAPI, slotsAPI } from "../services/api";
 import {
   User,
   Mail,
@@ -26,6 +26,7 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [bookings, setBookings] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,8 +45,18 @@ const Profile = () => {
         currentPassword: "",
         newPassword: "",
       });
+      fetchBookings();
     }
   }, [isAuthenticated, navigate, user]);
+
+  const fetchBookings = async () => {
+    try {
+      const response = await slotsAPI.getMyBookings();
+      setBookings(response.data.data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    }
+  };
 
   const showMessage = (text, type) => {
     setMessage({ text, type });
@@ -88,9 +99,13 @@ const Profile = () => {
         updateData.newPassword = formData.newPassword;
       }
 
-      console.log('Sending update request:', { ...updateData, currentPassword: '***', newPassword: '***' });
+      console.log("Sending update request:", {
+        ...updateData,
+        currentPassword: "***",
+        newPassword: "***",
+      });
       const response = await authAPI.updateProfile(updateData);
-      console.log('Update response:', response.data);
+      console.log("Update response:", response.data);
 
       if (response.data.success) {
         // Update token if provided
@@ -116,8 +131,8 @@ const Profile = () => {
         setTimeout(() => window.location.reload(), 1000);
       }
     } catch (error) {
-      console.error('Update profile error:', error);
-      console.error('Error response:', error.response);
+      console.error("Update profile error:", error);
+      console.error("Error response:", error.response);
       const errorMessage =
         error.response?.data?.message || "Failed to update profile";
       showMessage(errorMessage, "error");
@@ -157,7 +172,7 @@ const Profile = () => {
     <div className="max-w-4xl mx-auto p-3 sm:p-4 pb-20">
       {/* Header */}
       <div className="glass-card p-6 sm:p-8 mb-6 sm:mb-8 text-center animate-fade-in">
-        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary-500/30 to-purple-500/30 mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary-500/20 mb-4">
           <User className="w-8 h-8 sm:w-10 sm:h-10 text-primary-400" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-display font-bold text-gradient mb-2">
@@ -308,20 +323,8 @@ const Profile = () => {
                 <Lock className="w-4 h-4 text-primary-400" />
                 Password
               </label>
-              <div className="glass-card p-4 border border-white/10 flex items-center justify-between">
-                <p className="text-white font-medium">
-                  {showPassword ? "**************" : "••••••••••••"}
-                </p>
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-primary-400 hover:text-primary-300 transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
+              <div className="glass-card p-4 border border-white/10">
+                <p className="text-white font-medium">••••••••••••</p>
               </div>
             </div>
           )}
@@ -450,15 +453,35 @@ const Profile = () => {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="glass-card p-4 border border-primary-500/30 text-center">
-            <p className="text-3xl font-bold text-primary-400">0</p>
+            <p className="text-3xl font-bold text-primary-400">
+              {bookings.length}
+            </p>
             <p className="text-sm text-gray-400 mt-1">Total Bookings</p>
           </div>
           <div className="glass-card p-4 border border-primary-500/30 text-center">
-            <p className="text-3xl font-bold text-primary-400">0</p>
+            <p className="text-3xl font-bold text-primary-400">
+              {
+                bookings.filter((b) => {
+                  const bookingDateTime = new Date(
+                    `${b.date}T${b.timeSlot.split(" - ")[1]}:00`
+                  );
+                  return bookingDateTime >= new Date();
+                }).length
+              }
+            </p>
             <p className="text-sm text-gray-400 mt-1">Active Bookings</p>
           </div>
           <div className="glass-card p-4 border border-primary-500/30 text-center">
-            <p className="text-3xl font-bold text-primary-400">0</p>
+            <p className="text-3xl font-bold text-primary-400">
+              {
+                bookings.filter((b) => {
+                  const bookingDateTime = new Date(
+                    `${b.date}T${b.timeSlot.split(" - ")[1]}:00`
+                  );
+                  return bookingDateTime < new Date();
+                }).length
+              }
+            </p>
             <p className="text-sm text-gray-400 mt-1">Completed</p>
           </div>
         </div>

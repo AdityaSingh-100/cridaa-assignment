@@ -1,12 +1,12 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { authAPI } from "../services/api";
 
 const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -14,7 +14,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
   useEffect(() => {
     if (token) {
@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.getCurrentUser();
       setUser(response.data.user);
     } catch (error) {
-      console.error('Error loading user:', error);
+      console.error("Error loading user:", error);
       logout();
     } finally {
       setLoading(false);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await authAPI.login({ email, password });
     const { token, user } = response.data;
-    localStorage.setItem('token', token);
+    localStorage.setItem("token", token);
     setToken(token);
     setUser(user);
     return response.data;
@@ -48,14 +48,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password) => {
     const response = await authAPI.register({ name, email, password });
     const { token, user } = response.data;
-    localStorage.setItem('token', token);
+    localStorage.setItem("token", token);
     setToken(token);
     setUser(user);
     return response.data;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setToken(null);
     setUser(null);
   };

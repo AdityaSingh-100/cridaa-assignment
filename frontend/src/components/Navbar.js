@@ -20,7 +20,7 @@ const Navbar = () => {
           <img
             src={logo}
             alt="CourtBook Logo"
-            className="h-12 sm:h-12 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+            className="h-14 sm:h-16 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
             onError={(e) => {
               e.target.style.display = "none";
               e.target.nextSibling.style.display = "block";

@@ -26,8 +26,28 @@ const BookingPage = () => {
   const [bookingSlot, setBookingSlot] = useState(null);
   const [message, setMessage] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const fullText = "Book your Perfect Sports Turf Today";
+
+  // Typing animation effect
+  useEffect(() => {
+    let currentIndex = 0;
+    const typingInterval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setDisplayedText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typingInterval);
+        setShowSubtitle(true);
+      }
+    }, 80);
+
+    return () => clearInterval(typingInterval);
+  }, []);
 
   const courts = [
     "all",
@@ -170,12 +190,16 @@ const BookingPage = () => {
     <div className="max-w-7xl mx-auto p-3 sm:p-4 pb-20">
       {/* Hero Section */}
       <div className="glass-card p-6 sm:p-8 mb-6 sm:mb-8 text-center animate-fade-in">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gradient mb-3 sm:mb-4">
-          Book Your Court
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gradient mb-3 sm:mb-4 min-h-[3rem] sm:min-h-[4rem]">
+          {displayedText}
+          <span className="animate-pulse">|</span>
         </h1>
-        <p className="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
-          Reserve your preferred time slot across our premium indoor and outdoor
-          courts
+        <p
+          className={`text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto transition-opacity duration-500 ${
+            showSubtitle ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          Find the nearest court, book your slot, and play without limits.
         </p>
       </div>
 
