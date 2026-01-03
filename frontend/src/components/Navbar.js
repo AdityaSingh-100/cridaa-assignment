@@ -56,10 +56,10 @@ const Navbar = () => {
                 </svg>
               </Link>
 
-              <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-white/5 rounded-lg border border-white/20">
-                <User className="w-4 h-4 text-primary-400" />
-                <span className="text-sm font-medium">{user?.name}</span>
-              </div>
+              <Link to="/profile" className="animated-button">
+                <User className="absolute left-3 w-5 h-5 text-primary-400 z-10" />
+                <span className="text pl-6">{user?.name}</span>
+              </Link>
 
               <button onClick={handleLogout} className="animated-button">
                 <svg

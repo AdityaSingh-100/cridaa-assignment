@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
         register: "POST /api/auth/register",
         login: "POST /api/auth/login",
         me: "GET /api/auth/me (Protected)",
+        update: "PUT /api/auth/update (Protected)",
       },
       slots: {
         getAll: "GET /api/slots",

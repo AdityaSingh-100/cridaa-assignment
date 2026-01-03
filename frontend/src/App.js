@@ -7,6 +7,7 @@ import BookingPage from "./components/BookingPage";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import MyBookings from "./components/MyBookings";
+import Profile from "./components/Profile";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/my-bookings" element={<MyBookings />} />
+              <Route path="/profile" element={<Profile />} />
             </Routes>
           </main>
           <Footer />
