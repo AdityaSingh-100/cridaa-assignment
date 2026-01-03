@@ -5,8 +5,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900/50 to-gray-900 border-t border-white/10 mt-12 sm:mt-20">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+    <footer className="relative bg-gradient-to-br from-black via-gray-950 to-black border-t border-white/20 mt-12 sm:mt-20 overflow-hidden">
+      {/* White gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-transparent pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 relative z-10">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* About Section */}

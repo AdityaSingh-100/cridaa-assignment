@@ -79,17 +79,21 @@ REACT_APP_API_URL=http://localhost:5000/api
 ## 🆕 Recent Updates (January 3, 2026)
 
 ### Enhanced User Experience
+
 - **📱 Fully Responsive Design**: Optimized for all screen sizes (mobile, tablet, desktop) with custom breakpoints
+
   - Added `xs` breakpoint (480px) for extra small devices
   - Responsive typography and spacing throughout the app
   - Touch-friendly UI elements for mobile users
 
 - **📅 Calendar Date Picker**: Replaced button-based date selection with native HTML5 calendar input
+
   - Users can now select any date up to 60 days in advance
   - Visual calendar interface for easier date selection
   - Displays selected date in user-friendly format
 
 - **⏰ Smart Slot Display**: Improved booking flow with conditional rendering
+
   - Time slots only appear after selecting a specific time
   - No more scrolling through irrelevant slots
   - Clear prompt to guide users: "Select a time slot to view available courts"
@@ -101,6 +105,7 @@ REACT_APP_API_URL=http://localhost:5000/api
   - Better planning flexibility for users
 
 ### Component Improvements
+
 - **Navbar**: Compact mobile design with icon-only buttons
 - **Forms**: Smaller padding and text on mobile devices
 - **Footer**: Responsive grid layout adapting to screen size

@@ -76,16 +76,22 @@ const MyBookings = () => {
   return (
     <div className="max-w-6xl mx-auto p-3 sm:p-4 pb-20">
       {/* Header */}
-      <div className="glass-card p-6 sm:p-8 mb-6 sm:mb-8 text-center animate-fade-in">
-        <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary-500/20 mb-3 sm:mb-4">
-          <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400" />
+      <div className="glass-card p-6 sm:p-8 mb-6 sm:mb-8 text-center animate-fade-in relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-purple-500/5 to-primary-500/5 animate-gradient-x opacity-50"></div>
+
+        <div className="relative z-10">
+          <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary-500/30 to-purple-500/30 mb-3 sm:mb-4 animate-pulse-slow shadow-lg shadow-primary-500/20">
+            <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400 animate-bounce-subtle" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gradient mb-2 animate-slide-down">
+            My Bookings
+          </h1>
+          <div className="w-20 h-1 bg-gradient-to-r from-transparent via-primary-500 to-transparent mx-auto mb-3 animate-pulse"></div>
+          <p className="text-sm sm:text-base text-gray-400 animate-fade-in-delayed">
+            Manage your court reservations
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-display font-bold text-gradient mb-2">
-          My Bookings
-        </h1>
-        <p className="text-sm sm:text-base text-gray-400">
-          Manage your court reservations
-        </p>
       </div>
 
       {/* Message Alert */}
