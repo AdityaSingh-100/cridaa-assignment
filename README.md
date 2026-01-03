@@ -76,6 +76,36 @@ REACT_APP_API_URL=http://localhost:5000/api
 3. **Book**: Select date, court, and time slot
 4. **Manage**: View and cancel bookings in "My Bookings"
 
+## 🆕 Recent Updates (January 3, 2026)
+
+### Enhanced User Experience
+- **📱 Fully Responsive Design**: Optimized for all screen sizes (mobile, tablet, desktop) with custom breakpoints
+  - Added `xs` breakpoint (480px) for extra small devices
+  - Responsive typography and spacing throughout the app
+  - Touch-friendly UI elements for mobile users
+
+- **📅 Calendar Date Picker**: Replaced button-based date selection with native HTML5 calendar input
+  - Users can now select any date up to 60 days in advance
+  - Visual calendar interface for easier date selection
+  - Displays selected date in user-friendly format
+
+- **⏰ Smart Slot Display**: Improved booking flow with conditional rendering
+  - Time slots only appear after selecting a specific time
+  - No more scrolling through irrelevant slots
+  - Clear prompt to guide users: "Select a time slot to view available courts"
+  - Removed "All Times" option to enforce better UX
+
+- **📆 Extended Availability**: Backend now generates slots for 60 days (2 months) instead of 7 days
+  - Covers current and next month completely
+  - Total of 2,880 slots generated (60 days × 3 courts × 16 time slots)
+  - Better planning flexibility for users
+
+### Component Improvements
+- **Navbar**: Compact mobile design with icon-only buttons
+- **Forms**: Smaller padding and text on mobile devices
+- **Footer**: Responsive grid layout adapting to screen size
+- **Cards**: Improved spacing and readability across devices
+
 ## 📝 Challenges & Solutions
 
 **Double Bookings:** MongoDB indexes prevent race conditions when multiple users book simultaneously. Database transactions ensure atomic slot reservation.
